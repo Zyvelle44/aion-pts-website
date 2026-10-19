@@ -1,5 +1,13 @@
 # AION PTS Website
 
+**Join our Discord community to get additional plugins and modules for AION PTS Website.**
+
+Discover more extensions, modules, updates, and community support.
+
+**Discord:** [discord.gg/xxX3d3Akb8](https://discord.gg/xxX3d3Akb8)
+
+---
+
 **AION PTS Web CMS** built with **Laravel 12** and **Filament 5**.
 
 A web portal and administration panel for AION private-server projects. The application connects to a website database for CMS data and a separate Microsoft SQL Server database for AION account/game data.
@@ -34,8 +42,9 @@ Confirm the PHP extensions and SQL Server drivers in the same PHP environment us
 ### 1. Get the source
 
 ```bash
-git clone https://github.com/<OWNER>/<REPOSITORY>.git
-cd <REPOSITORY>
+
+git clone https://github.com/Zyvelle44/aion-pts-website.git
+cd aion-pts-website
 ```
 
 Replace the URL and directory with the repository you published.
