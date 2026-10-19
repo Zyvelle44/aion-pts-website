@@ -108,9 +108,6 @@ AION_DB_USERNAME=your_aion_db_user
 AION_DB_PASSWORD=replace_me
 AION_DB_TRUST_SERVER_CERTIFICATE=true
 
-# Separate admin session cookie
-ADMIN_SESSION_COOKIE=aion-pts-admin-session
-
 # Optional Gemini integration
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-3.5-flash-lite
@@ -171,7 +168,7 @@ Open the URL printed by Laravel, commonly `http://127.0.0.1:8000`. For local dev
 - Build assets with `npm ci && npm run build`.
 - Run migrations only against the website database after taking a backup.
 - Verify the AION SQL Server connection and Producer schema before enabling registration/password-change features.
-- Test admin login, game-account login, session separation, logout behavior, CSRF/Livewire requests, and plugin enable/disable behavior.
+- Test admin login, game-account login, session behavior, logout behavior, CSRF/Livewire requests, and plugin enable/disable behavior.
 - Confirm the web server document root points to Laravel's `public/` directory, not the project root.
 - Configure backups and monitor Laravel logs without publishing log files.
 
@@ -189,9 +186,9 @@ Verify that the Producer tables and the `dbo.ap_AutoReg` / `dbo.ap_AutoChangePwd
 
 Run `npm ci` and `npm run build`, then confirm the `public/build` assets are deployed.
 
-### Admin session / CSRF errors
+### Session / CSRF errors
 
-Verify that the admin session cookie configuration is present, clear stale browser cookies for the site, run `php artisan optimize:clear`, and retest admin and game-account login/logout independently. Validate this on the actual deployment; do not assume configuration alone proves the issue is resolved.
+This project uses Laravel's standard session cookie for website and Filament requests. Filament authorization is enforced by its authentication middleware and application roles; do not switch the session cookie dynamically by URL. If a previous build used `ADMIN_SESSION_COOKIE`, remove that setting from `.env`, clear the site's stale cookies in the browser, run `php artisan optimize:clear` after stopping other Laravel/PHP processes, restart the development server, and sign in again. Keep one hostname consistently (for example, `http://localhost:8000`) so the browser sends the same cookies to every Livewire request.
 
 ## Development checks
 

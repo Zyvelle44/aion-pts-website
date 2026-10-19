@@ -132,9 +132,6 @@ return [
         Str::slug((string) env('APP_NAME', 'laravel')).'-session'
     ),
 
-    // Dedicated cookie for Filament admin authentication.
-    'admin_cookie' => env('ADMIN_SESSION_COOKIE', Str::slug((string) env('APP_NAME', 'laravel')).'-admin-session'),
-
     /*
     |--------------------------------------------------------------------------
     | Session Cookie Path

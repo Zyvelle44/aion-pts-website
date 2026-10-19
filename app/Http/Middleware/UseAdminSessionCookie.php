@@ -11,11 +11,6 @@ class UseAdminSessionCookie
     public function handle(Request $request, Closure $next): Response
     {
         $originalCookieName = config('session.cookie');
-
-        if (! $this->isAdminRequest($request)) {
-            return $next($request);
-        }
-
         $adminCookieName = (string) config(
             'session.admin_cookie',
             (string) config('app.name', 'laravel') . '-admin-session'
@@ -26,6 +21,14 @@ class UseAdminSessionCookie
             $adminCookieName = 'laravel-admin-session';
         }
 
+        if (! $this->isAdminRequest($request, $adminCookieName)) {
+            return $next($request);
+        }
+
+        // Select the dedicated admin session before EncryptCookies and StartSession run.
+        // Livewire temporary uploads use their own URL, so the /admin path check alone
+        // is insufficient when the browser omits the Referer header. Only treat a
+        // Livewire upload as admin traffic when the dedicated admin cookie is present.
         config(['session.cookie' => $adminCookieName]);
 
         try {
@@ -35,20 +38,26 @@ class UseAdminSessionCookie
         }
     }
 
-    private function isAdminRequest(Request $request): bool
+    private function isAdminRequest(Request $request, string $adminCookieName): bool
     {
         if ($request->is('admin') || $request->is('admin/*')) {
             return true;
         }
 
         $referer = $request->headers->get('referer');
-        if (! is_string($referer) || $referer === '') {
-            return false;
+        if (is_string($referer) && $referer !== '') {
+            $refererPath = parse_url($referer, PHP_URL_PATH);
+            if (is_string($refererPath)
+                && ($refererPath === '/admin' || str_starts_with($refererPath, '/admin/'))) {
+                return true;
+            }
         }
 
-        $refererPath = parse_url($referer, PHP_URL_PATH);
+        // Livewire 3/4 temporary upload endpoints have the form
+        // /livewire-<hash>/upload-file. Do not switch public requests merely
+        // because the admin cookie exists; scope this fallback to upload requests.
+        $isLivewireUpload = preg_match('#^livewire-[^/]+/upload-file$#', ltrim($request->path(), '/')) === 1;
 
-        return is_string($refererPath)
-            && ($refererPath === '/admin' || str_starts_with($refererPath, '/admin/'));
+        return $isLivewireUpload && $request->cookies->has($adminCookieName);
     }
 }

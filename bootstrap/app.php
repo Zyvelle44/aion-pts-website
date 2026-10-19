@@ -18,7 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(prepend: [\App\Http\Middleware\UseAdminSessionCookie::class]);
         $middleware->alias([
             'auth.aion' => EnsureAionAuthenticated::class,
             'guest.aion' => RedirectIfAionAuthenticated::class,
