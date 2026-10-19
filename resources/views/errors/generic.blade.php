@@ -1,0 +1,1 @@
+@include('errors.aion', ['code' => (string) ($status ?? 500), 'errorTitle' => 'Request Could Not Be Completed', 'errorMessage' => 'The request could not be completed. Please try again later.', 'showBack' => false])
